@@ -1,0 +1,45 @@
+Background information on thermodynamic infeasibility check of intermediary EFMs.  
+
+########################
+#
+# PARAMETERS
+#
+######################## 
+
+Following parameters are compulsory for the checks: 
+    -thermo DFG-FILE 
+    -conc   CONCENTRATION_FILE 
+    
+Following parameters are optional
+    -ph			- pH value (default: 7)
+    -temperature	- temperature in K (default: 310.15 K)
+    -ionstrength        - ionic strength in M (default: 0.15 M)
+    -thermothreads      - number of threads used by cplex (default: number of threads given by general option -maxthreads)
+    -pattern            - name of file to print infeasible reaction pattern (default: not printed)
+    -lpfile             - name of file to print initial lp file used by cplex (default: not printed)
+    -lpvar              - name of file to print variables and description as used by cplex (default: not printed)
+
+########################
+#
+# FORMAT
+#
+######################## 
+
+Format of DFG-FILE:
+###################
+metaboliteName=(dfG_sp1,z_sp1,nH_sp1),(dfG_sp2,z_sp2,nH_sp2)
+
+    where dfG_sp is the dfG^0 of the species
+    z_sp is the charge of the species
+    and nH_sp is the number of H-atoms in the species
+
+    data can be downloaded, e.g. at http://equilibrator.weizmann.ac.il/
+
+
+Format of CONCENTRATION_FILE:
+#############################
+metabolite name in model;metabolite name in DFG-FILE;minimum concentration;maximum concentration;
+
+Example
+#######
+An example can be found at /examples/ecoli_core_on_glc

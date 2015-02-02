@@ -1,0 +1,28 @@
+# logger properties for ch.javasoft.util.logging.Loggers
+# 
+.level														: INFO
+java.level													: WARNING
+javax.level													: WARNING
+org.ietf.level												: WARNING
+org.jcp.level												: WARNING
+org.omg.level												: WARNING
+org.w3c.level												: WARNING
+sun.level													: WARNING
+sunw.level													: WARNING
+handlers													: ch.javasoft.util.logging.StandardOutHandler,ch.javasoft.util.logging.StandardErrHandler
+ch.javasoft.util.logging.StandardErrHandler.level			: WARNING
+ch.javasoft.util.logging.StandardErrHandler.formatter		: ch.javasoft.util.logging.LogFormatter
+ch.javasoft.util.logging.StandardOutHandler.level			: ALL
+ch.javasoft.util.logging.StandardOutHandler.formatter		: ch.javasoft.util.logging.LogFormatter
+ch.javasoft.util.logging.StandardOutHandler.filter			: ch.javasoft.util.logging.LevelFilter
+ch.javasoft.util.logging.LevelFilter.type					: LessSevere
+ch.javasoft.util.logging.LevelFilter.threshold				: WARNING
+# for the case a file handler is used
+java.util.logging.FileHandler.level							: ALL
+java.util.logging.FileHandler.formatter						: ch.javasoft.util.logging.LogFormatter
+java.util.logging.FileHandler.pattern						: %t/java.log
+# default format, the arguments are
+#   0: current time / 1: thread / 2: logger / 3: level / 4: message / 5: line break  
+ch.javasoft.util.logging.LogFormatter.format				: {0,date,yyyy-MM-dd}  {0,time,HH:mm:ss.SSS}  {1}  {2}  {3}  | {4}{5}
+# use the following format for plain logging, one line per message
+#ch.javasoft.util.logging.LogFormatter.format				: {4}{5}
