@@ -1,0 +1,651 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	=====================================================
+	polco version 4.7.1, 2009-12-04 18:30:06
+	Copyright (c) 2009, Marco Terzer, Zurich, Switzerland
+	This is free software, !!! NO WARRANTY !!!
+	See LICENCE.txt for redistribution conditions
+	=====================================================
+ -->
+<config-list default="default">
+	<!--
+
+	Predefined values for attribute expressions:
+		${work-dir}	the current work directory (where java has been started)
+		${app-name}	the application or unit-test name		
+		${sys-prop}	any system property, e.g. 
+					user.home					-> ${sys-prop:user.home}
+					myprop with default value	-> ${sys-prop:myprop:mydefault}
+		${date}		current date, formatted like this: 2006-18-09
+		${time}		current time, formatted like this: 19:35:43.415
+		${now}		current timestamp, formatted like this: 2006-09-18_19:35:43.415
+					
+	Command line arguments can directly be addressed:
+		${1}			the first argument
+		${2}			the second
+		...
+	Command line arguments can also have the 'option' structure, e.g. for the
+	arguments '-in PARSEDIR -log file LOGFILE', the can be accessed like the
+	following:
+		${-in[1]}	will be resolved as: PARSEDIR
+		${-log[1]}	will be resolved as: file
+		${-log[2]}	will be resolved as: LOGFILE
+		
+	Command line arguments can also have the 'list' structure, where the number
+	of arguments is not known in advance. For instance, to list any number of
+	files like '-files file1 file2 file3 file4 ...', you can access the files
+	list 
+		${-file[*,*]}	will be resolved as file1,file2,file3,file4,...
+		${-file[*:*]}	will be resolved as file1:file2:file3:file4:...
+
+	After command line arguments, options and lists, a default value can be 
+	defined, e.g.
+	    ${-log[1]:/tmp/log.txt}
+					
+	referable entries can be referred using the ref attribute 
+	(see samples below)
+	-->
+
+	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->		
+	<!-- =================== referables =================== -->	
+
+	<!-- =================== logging =================== -->
+	<referable name="default-logging-format">
+ 		<!--  
+ 			log format, arguments (0-based) are:
+ 				0: current time / 1: thread / 2: logger / 3: level / 4: message / 5: line break
+ 		-->
+ 		<property 	name="ch.javasoft.util.logging.LogFormatter.format" 	
+ 					value="{0,date,yyyy-MM-dd}  {0,time,HH:mm:ss.SSS}  {1}  {2}  {3}  | {4}{5}"/>
+	</referable>
+	<referable name="plain-logging-format">
+ 		<!--  
+ 			log format, arguments (0-based) are:
+ 				0: current time / 1: thread / 2: logger / 3: level / 4: message / 5: line break
+ 		-->
+ 		<property 	name="ch.javasoft.util.logging.LogFormatter.format" 	
+ 					value="{4}{5}"/>
+	</referable>
+	<referable name="console-logging-handlers">
+ 		<property name="handlers" 	value="ch.javasoft.util.logging.StandardOutHandler,ch.javasoft.util.logging.StandardErrHandler"/>	
+ 		<!--  handler configurations  -->
+ 		<property name="ch.javasoft.util.logging.StandardErrHandler.level" 		value="WARNING"/>	
+ 		<property name="ch.javasoft.util.logging.StandardErrHandler.formatter" 	value="ch.javasoft.util.logging.LogFormatter"/>	
+ 		<property name="ch.javasoft.util.logging.StandardOutHandler.level" 		value="ALL"/>	
+ 		<property name="ch.javasoft.util.logging.StandardOutHandler.formatter" 	value="ch.javasoft.util.logging.LogFormatter"/>	
+ 		<property name="ch.javasoft.util.logging.StandardOutHandler.filter" 	value="ch.javasoft.util.logging.LevelFilter"/>
+ 		<!--  filter configurations -->
+ 		<property name="ch.javasoft.util.logging.LevelFilter.type" 		value="LessSevere"/>	
+ 		<property name="ch.javasoft.util.logging.LevelFilter.threshold" value="WARNING"/>	
+	</referable>
+	<referable name="file-logging-handlers">
+ 		<property name="handlers" 	value="java.util.logging.FileHandler"/>	
+ 		<!--  handler configurations  -->
+ 		<property name="java.util.logging.FileHandler.level" 		value="ALL"/>	
+ 		<property name="java.util.logging.FileHandler.formatter" 	value="ch.javasoft.util.logging.LogFormatter"/>
+ 		<property name="java.util.logging.FileHandler.pattern"		value="${-log[2]:%t/metabolic-efm.log}"/>
+	</referable>
+	<referable name="console-logging">
+ 		<property name=".level" value="${-level[1]:INFO}"/>
+ 		<property name="java.level" value="WARNING"/>
+ 		<property name="javax.level" value="WARNING"/>
+ 		<property name="org.ietf.level" value="WARNING"/>
+ 		<property name="org.jcp.level" value="WARNING"/>
+ 		<property name="org.omg.level" value="WARNING"/>
+ 		<property name="org.w3c.level" value="WARNING"/>
+ 		<property name="sun.level" value="WARNING"/>
+ 		<property name="sunw.level" value="WARNING"/>
+ 		<property ref="console-logging-handlers"/>
+ 		<property ref="${-format[1]:default}-logging-format"/>
+	</referable>
+	<referable name="file-logging">
+ 		<property name=".level" value="${-level[1]:INFO}"/>
+ 		<property name="java.level" value="WARNING"/>
+ 		<property name="javax.level" value="WARNING"/>
+ 		<property name="org.ietf.level" value="WARNING"/>
+ 		<property name="org.jcp.level" value="WARNING"/>
+ 		<property name="org.omg.level" value="WARNING"/>
+ 		<property name="org.w3c.level" value="WARNING"/>
+ 		<property name="sun.level" value="WARNING"/>
+ 		<property name="sunw.level" value="WARNING"/>
+ 		<property ref="file-logging-handlers"/>
+ 		<property ref="${-format[1]:default}-logging-format"/>
+	</referable>
+	
+	<!-- =================== parsing input =================== -->
+	<!--  
+		parses a cdd .ine or .ext file
+		see 
+			ftp://ftp.ifor.math.ethz.ch/pub/fukuda/cdd/cddman/node3.html
+		sample: polco -kind cdd -in ccp7.ext
+	-->
+	<referable name="cdd-parser">
+		<parse factory="ch.javasoft.polco.parse.CddParserFactory">
+			<input type="file">
+				<file name="${-in[1]}"/>
+			</input>
+		</parse>
+	</referable>
+	
+	<!-- 
+		parses a polymake .poly file
+		see http://www.math.tu-berlin.de/polymake
+	 -->
+	<referable name="polymake-parser">
+		<parse factory="ch.javasoft.polco.parse.PolymakeParserFactory">
+			<input type="file">
+				<file name="${-in[1]}"/>
+			</input>
+		</parse>
+	</referable>
+
+	<!-- 
+		parses an MPS .mps file
+		see http://lpsolve.sourceforge.net/5.5/mps-format.htm
+		or http://en.wikipedia.org/wiki/MPS_(format)
+	 -->
+	<referable name="mps-parser">
+		<parse factory="ch.javasoft.polco.parse.MpsParserFactory">
+			<input type="file">
+				<file name="${-in[1]}"/>
+			</input>
+		</parse>
+	</referable>
+
+	<!-- 
+		parses one or two text files for equality and inequality matrices,
+		each row on a line, values separated by tab or whitespace
+	 -->
+	<referable name="text-parser">
+		<parse factory="ch.javasoft.polco.parse.TextParserFactory">
+			<equalities type="${-eq[2]:fractional}">
+				<input type="file">
+					<file name="${-eq[1]:null}"/>
+				</input>
+			</equalities>
+			<inequalities type="${-iq[2]:fractional}">
+				<input type="file">
+					<file name="${-iq[1]}"/>
+				</input>
+			</inequalities>
+		</parse>
+	</referable>
+
+	<!-- =================== compression =================== -->	
+	<!-- 
+		predefined command line options/arguments:
+			-compression[1]	compression to use, one of: 
+							default, off, unique, nullspace, 
+							unique-no-recursion, nullspace-no-recursion
+		
+	-->
+	<referable name="default-compression-methods">
+		<compression-methods>
+			<method name="CoupledZero"/>
+			<method name="CoupledContradicting"/>
+			<method name="CoupledCombine"/>
+			<method name="UniqueFlows"/>
+			<method name="DeadEnd"/>
+			<method name="Recursive"/>
+			<method name="DuplicateGene" value="false"/>
+			<method name="DuplicateGeneExtended" value="false"/>
+			<method name="InterchangeableMetabolite" value="false"/>
+		</compression-methods>
+	</referable>
+	<referable name="default-no-combine-compression-methods">
+		<compression-methods>
+			<method name="CoupledZero"/>
+			<method name="CoupledContradicting"/>
+			<method name="CoupledCombine" value="false"/>
+			<method name="UniqueFlows" value="false"/>
+			<method name="DeadEnd"/>
+			<method name="Recursive"/>
+			<method name="DuplicateGene" value="false"/>
+			<method name="DuplicateGeneExtended" value="false"/>
+			<method name="InterchangeableMetabolite" value="false"/>
+		</compression-methods>
+	</referable>
+	<referable name="default-no-couple-combine-compression-methods">
+		<compression-methods>
+			<method name="CoupledZero"/>
+			<method name="CoupledContradicting"/>
+			<method name="CoupledCombine" value="false"/>
+			<method name="UniqueFlows"/>
+			<method name="DeadEnd"/>
+			<method name="Recursive"/>
+			<method name="DuplicateGene" value="false"/>
+			<method name="DuplicateGeneExtended" value="false"/>
+			<method name="InterchangeableMetabolite" value="false"/>
+		</compression-methods>
+	</referable>
+	<referable name="default-no-duplicate-compression-methods">
+		<compression-methods>
+			<method name="CoupledZero"/>
+			<method name="CoupledContradicting"/>
+			<method name="CoupledCombine"/>
+			<method name="UniqueFlows"/>
+			<method name="DeadEnd"/>
+			<method name="Recursive"/>
+			<method name="DuplicateGene" value="false"/>
+			<method name="DuplicateGeneExtended" value="false"/>
+			<method name="InterchangeableMetabolite" value="false"/>
+		</compression-methods>
+	</referable>
+	<referable name="default-all-duplicate-compression-methods">
+		<compression-methods>
+			<method name="CoupledZero"/>
+			<method name="CoupledContradicting"/>
+			<method name="CoupledCombine"/>
+			<method name="UniqueFlows"/>
+			<method name="DeadEnd"/>
+			<method name="Recursive"/>
+			<method name="DuplicateGene"/>
+			<method name="DuplicateGeneExtended"/>
+			<method name="InterchangeableMetabolite" value="false"/>
+		</compression-methods>
+	</referable>
+	<referable name="off-compression-methods">
+		<compression-methods>
+			<method name="CoupledZero" value="false"/>
+			<method name="CoupledContradicting" value="false"/>
+			<method name="CoupledCombine" value="false"/>
+			<method name="UniqueFlows" value="false"/>
+			<method name="DeadEnd" value="false"/>
+			<method name="Recursive" value="false"/>
+			<method name="DuplicateGene" value="false"/>
+			<method name="DuplicateGeneExtended" value="false"/>
+			<method name="InterchangeableMetabolite" value="false"/>
+		</compression-methods>
+	</referable>
+	<referable name="unique-compression-methods">
+		<compression-methods>
+			<method name="CoupledZero" value="false"/>
+			<method name="CoupledContradicting" value="false"/>
+			<method name="CoupledCombine" value="false"/>
+			<method name="UniqueFlows"/>
+			<method name="DeadEnd"/>
+			<method name="Recursive"/>
+			<method name="DuplicateGene" value="false"/>
+			<method name="DuplicateGeneExtended" value="false"/>
+			<method name="InterchangeableMetabolite" value="false"/>
+		</compression-methods>
+	</referable>
+	<referable name="nullspace-compression-methods">
+		<compression-methods>
+			<method name="CoupledZero"/>
+			<method name="CoupledContradicting"/>
+			<method name="CoupledCombine"/>
+			<method name="UniqueFlows" value="false"/>
+			<method name="DeadEnd" value="false"/>
+			<method name="Recursive"/>
+			<method name="DuplicateGene" value="false"/>
+			<method name="DuplicateGeneExtended" value="false"/>
+			<method name="InterchangeableMetabolite" value="false"/>
+		</compression-methods>
+	</referable>
+	<referable name="unique-no-recursion-compression-methods">
+		<compression-methods>
+			<method name="CoupledZero" value="false"/>
+			<method name="CoupledContradicting" value="false"/>
+			<method name="CoupledCombine" value="false"/>
+			<method name="UniqueFlows"/>
+			<method name="DeadEnd"/>
+			<method name="Recursive" value="false"/>
+			<method name="DuplicateGene" value="false"/>
+			<method name="DuplicateGeneExtended" value="false"/>
+			<method name="InterchangeableMetabolite" value="false"/>
+		</compression-methods>
+	</referable>
+	<referable name="nullspace-no-recursion-compression-methods">
+		<compression-methods>
+			<method name="CoupledZero"/>
+			<method name="CoupledContradicting"/>
+			<method name="CoupledCombine"/>
+			<method name="UniqueFlows" value="false"/>
+			<method name="DeadEnd" value="false"/>
+			<method name="Recursive" value="false"/>
+			<method name="DuplicateGene" value="false"/>
+			<method name="DuplicateGeneExtended" value="false"/>
+			<method name="InterchangeableMetabolite" value="false"/>
+		</compression-methods>
+	</referable>
+    
+	<!-- =================== output =================== -->
+	<referable name="null-callback">
+		<callback factory="ch.javasoft.polco.callback.NullCallbackFactory"/>
+	</referable>
+
+	<referable name="hdf5-callback">
+		<callback factory="ch.javasoft.polco.callback.hdf5.Hdf5CallbackFactory">
+			<file name="${-out[2]}"/>
+			<gzip level="9"/>
+			<chunk rows="1024"/>
+		</callback>
+	</referable>
+
+	<referable name="matlab-callback">
+		<callback factory="ch.javasoft.polco.callback.matlab.MatlabCallbackFactory">
+			<file name="${-out[2]}"/>					
+		</callback>
+	</referable>
+
+	<referable name="text-callback">
+		<callback factory="ch.javasoft.polco.callback.TextCallbackFactory">
+			<stream type="file">
+				<file name="${-out[2]}"/>					
+			</stream>
+		</callback>
+	</referable>
+	<referable name="zip-callback">
+		<callback factory="ch.javasoft.polco.callback.ZipCallbackFactory">
+			<stream type="file">
+				<file name="${-out[2]}"/>					
+			</stream>
+		</callback>
+	</referable>
+	
+	<!-- =================== efm distribute =================== -->
+	<!-- 
+	     config stuff for distributed computation on multiple hosts,
+	     do not remove, it is needed also for normal computation
+	-->
+	
+	<referable name="efm-distribute-config">
+		<distribute ID="distribute" partition="256" candidate-threshold="100000"><!--use power of 4, e.g. 65536-->
+			<!-- local host config 			-->
+			<nodes vmargs = "-Xmx500M" level="FINER">
+				<node name="localhost"/>
+			</nodes>
+			<command value="/usr/bin/java [vmargs] -cp [classpath] [class] [args]"/>
+		</distribute>
+	</referable>
+		
+	<!-- =================== adj stuff =================== -->
+	<referable name="adjacency-methods">
+		<factories>
+			<class name="ch.javasoft.metabolic.efm.adj.incore.tree.search.PatternTreeMinZerosAdjacencyEnumerator"/>
+			<class name="ch.javasoft.metabolic.efm.adj.incore.tree.rank.PatternTreeRankAdjacencyEnumerator"/>
+			<class name="ch.javasoft.metabolic.efm.adj.incore.tree.rank.PatternTreeModRankAdjacencyEnumerator"/>
+			<class name="ch.javasoft.metabolic.efm.adj.incore.tree.urank.modpi.ModIntPrimePatternTreeRankUpdateAdjacencyEnumerator"/>
+			<class name="ch.javasoft.metabolic.efm.adj.incore.tree.urank.modp.ModPrimePatternTreeRankUpdateAdjacencyEnumerator"/>
+			<class name="ch.javasoft.metabolic.efm.adj.incore.tree.urank.frac.FractionalPatternTreeRankUpdateAdjacencyEnumerator"/>
+			<class name="ch.javasoft.metabolic.efm.adj.incore.tree.urank.frac2.Fractional2PatternTreeRankUpdateAdjacencyEnumerator"/>
+			<class name="ch.javasoft.metabolic.efm.adj.incore.tree.urank.dbl.DoublePatternTreeRankUpdateAdjacencyEnumerator"/>
+			<class name="ch.javasoft.metabolic.efm.adj.incore.tree.urank.dbl2.Double2PatternTreeRankUpdateAdjacencyEnumerator"/>
+			<class name="ch.javasoft.metabolic.efm.adj.incore.FastRankTestAdjacencyEnumerator"/>
+			<class name="ch.javasoft.metabolic.efm.adj.incore.ModRankTestAdjacencyEnumerator"/>
+			<class name="ch.javasoft.metabolic.efm.adj.ModIntPrimeInCoreAdjEnum"/>
+			<class name="ch.javasoft.metabolic.efm.adj.ModIntPrimeOutCoreAdjEnum"/>
+			<class name="ch.javasoft.metabolic.efm.dist.impl.adj.DistModIntPrimeInCoreAdjEnum"/>
+			<class name="ch.javasoft.metabolic.efm.dist.impl.adj.DistModIntPrimeOutCoreAdjEnum"/>
+			<class name="ch.javasoft.metabolic.efm.dist.impl.adj.MultiThreadedAdjEnum"/>
+			<class name="ch.javasoft.metabolic.efm.dist.impl.adj.MultiProcessedAdjEnum"/>
+		</factories>
+	</referable>
+	
+	<referable name="standard-adjacency-method">
+	    <adjacency-method value="${-adj[1]:default}">
+	    	<factories ref="adjacency-methods"/>
+	    </adjacency-method>
+	</referable>
+	<referable name="borndie-adjacency-method">
+	    <adjacency-method value="${-adj[1]:pattern-tree-rank-update-modpi}">
+	    	<factories ref="adjacency-methods"/>
+	    </adjacency-method>
+	</referable>
+	
+
+	<!-- =================== impl stuff =================== -->
+	<referable name="nullspace-model">
+		<model factory="ch.javasoft.metabolic.efm.model.nullspace.NullspaceEfmModelFactory"/>
+	</referable>
+	<referable name="canonical-model">
+		<model factory="ch.javasoft.metabolic.efm.model.canonical.CanonicalEfmModelFactory"/>
+	</referable>
+	
+	<referable name="standard-efm-impl">
+ 		<efm-impl class="ch.javasoft.metabolic.efm.impl.SequentialDoubleDescriptionImpl">
+			<config ref="efm-config"/>
+			<model ref="${-model[1]:nullspace}-model"/>
+			<memory ref="${-memory[1]:in-core}-memory"/>
+		</efm-impl>
+	</referable>	
+	<referable name="borndie-efm-impl">
+ 		<efm-impl class="ch.javasoft.metabolic.efm.borndie.BornDieDoubleDescriptionImpl">
+			<config ref="efm-config"/>
+			<model factory="ch.javasoft.metabolic.efm.borndie.model.BornDieEfmModelFactory"/>
+			<memory ref="${-memory[1]:in-core}-memory"/>
+		</efm-impl>
+	</referable>	
+
+	<referable name="in-core-memory">
+		<memory factory="ch.javasoft.metabolic.efm.memory.incore.InCoreMemoryFactory"/>
+	</referable>
+	<referable name="out-core-memory">
+		<memory factory="ch.javasoft.metabolic.efm.memory.outcore.SortInCoreOutOfCoreMemoryFactory"/>
+	</referable>
+	<referable name="sort-out-core-memory">
+		<memory factory="ch.javasoft.metabolic.efm.memory.outcore.OutOfCoreMemoryFactory"/>
+	</referable>
+
+	<!-- =================== polco/efm config =================== -->
+	<referable name="numeric">
+		<numeric>
+			<arithmetic value="${-arithmetic[1]:fractional}"/>
+			<precision value="-1"/>
+			<zero value="${-zero[1]:NaN}"/>
+		</numeric>
+	</referable>	
+	<referable name="polco-config">
+		<config>
+			<numeric-pre>
+				<arithmetic value="${-arithmetic[3]:fractional}"/>
+				<zero value="${-zero[3]:NaN}"/>
+			</numeric-pre>			
+			<numeric-post>
+				<arithmetic value="${-arithmetic[2]:fractional}"/>
+				<zero value="${-zero[2]:NaN}"/>
+			</numeric-post>			
+			<numeric ref="numeric"/>
+			<convert>
+				<matrix-scaling allow-row-by-row="true"/>
+			</convert>
+			<input sort="${-sortinput[1]:default}"/>
+		</config>
+	</referable>	
+	<referable name="efm-config">
+		<config>
+			<row-ordering value="${-sortinitial[1]:default}"/>
+		    <adjacency-method ref="${-algorithm[1]:standard}-adjacency-method"/>
+		    <maxthreads value="${-maxthreads[1]:-1}"/>
+			<numeric ref="numeric"/>
+			<self-test value="${-selftest[1]:false}"/>
+			<parse-only value="${-parseonly[1]:false}"/>
+			<generator value="${-generator[1]:efm}"/>
+			<reactions-to-suppress value="${-suppress[*,*]}"/>
+			<reactions-to-enforce value="${-enforce[*,*]}"/>
+			<reactions-no-split value="${-nosplit[*,*]}"/>
+			<temp-dir name="${-tmpdir[1]:/local/tmp}"/>
+			<progress type="${-progress[1]:none}" partition="${-progress[2]:100}"/>
+			<flag value="${-flag[1]:}"/> <!-- e.g. recover:/local/tmp/2008 -->
+			<distribute ref="efm-distribute-config"/>
+		</config>
+	</referable>	
+	
+	<!-- =================== usage =================== -->
+	<referable name="welcome-message">
+		<usage>
+			<line value="====================================================="/>
+			<line value="polco version 4.7.1, 2009-12-04 18:30:06"/>
+			<line value="Copyright (c) 2009, Marco Terzer, Zurich, Switzerland"/>
+			<line value="This is free software, !!! NO WARRANTY !!!"/>
+			<line value="See LICENCE.txt for redistribution conditions"/>
+			<line value="====================================================="/>
+		</usage>
+	</referable>
+	<referable name="usage-line">
+		<usage>
+			<line value="usage: java -jar polco.jar [OPTIONS] -kind [INPUT FORMAT] [INPUT] -out [OUTPUT FORMAT] [OUTPUT]"/>
+		</usage>
+	</referable>
+	<referable name="usage-options">
+		<usage>
+			<line value="input formats: "/>
+			<line value="   -kind cdd -in file"/>
+			<line value="     * parses a cdd .ine or .ext file"/>
+			<line value="     * see ftp://ftp.ifor.math.ethz.ch/pub/fukuda/cdd/cddman/node3.html"/>			
+			<line value=""/>
+			<line value="   -kind polymake -in file"/>
+			<line value="     * parses a polymake .poly file"/>
+			<line value="     * see http://www.math.tu-berlin.de/polymake"/>			
+			<line value=""/>
+			<line value="   -kind text -eq file [type] -iq file [type]"/>
+			<line value="     * parses one or two text files for equality (eq) and inequality (iq) matrix"/>
+			<line value="     * each file contains one matrix row per line, "/>
+			<line value="       column values are separated by tab or whitespace"/>
+			<line value="     * the optional type argument specifies the number type:"/>
+			<line value="       fractional (default), double or bigint"/>
+			<line value="     * the eq file is optional, the iq file mandatory"/>
+			<line value=""/>
+			<line value="output formats: "/>
+			<line value="   -out text file"/>
+			<line value="     * writes output to a text file, one extreme ray per line"/>
+			<line value="     * values are separated by tab"/>
+			<line value="   -out zip file"/>
+			<line value="     * writes output to a zip file, containing a text entry R"/>
+			<line value="     * R contains one extreme ray per line, values are separated by tab"/>
+			<line value="   -out matlab file"/>
+			<line value="     * writes output to a MATLAB .mat file"/>
+			<line value="     * the file contains the rays in a matrix R,"/>
+			<line value="       each extreme ray as a column of R"/>
+			<line value="     * raw byte size limited to approximately 4G"/>
+			<line value="   -out hdf5 file"/>
+			<line value="     * writes output to a hdf5 file"/>
+			<line value="     * the file contains the rays in a matrix R,"/>
+			<line value="       each extreme ray as a row of R"/>
+			<line value="     * native hdf5 java library (e.g. libjhdf5.so, jhdf5.dll) must be in path,"/>
+			<line value="       use vm argument -Djava.library.path, pointing to lib folder"/>
+			<line value="     * Java VM version >= 6"/>
+			<line value="     * see http://www.hdfgroup.org/HDF5"/>
+			<line value="   -out null"/>
+			<line value="     * writes no output, but reports the number of extreme rays in console"/>
+			<line value=""/>
+			<line value="general options: "/>
+			<line value="   -arithmetic a1 [a2 [a3]]"/>
+			<line value="     * specifies the arithmetic, one of: fractional, double or bigint"/>			
+			<line value="     * a1 is used for the core computation (fractional by default)"/>			
+			<line value="     * a2 is used for post-processing and output (fractional by default)"/>			
+			<line value="     * a3 is used for pre-processing (fractional by default)"/>			
+			<line value="   -zero v1 [v2 [v3]]"/>
+			<line value="     * specifies the value to treat as zero if double arithmetic is used"/>			
+			<line value="     * v1, v2 and v3 correspond to arithmetic a1, a2 and a3 above"/>			
+			<line value="     * default: 1e-10 for double, 0 for fractional/bigint"/>			
+			<line value="     * use NaN for default value"/>			
+			<line value="   -maxthreads t"/>
+			<line value="     * maximum number of threads to use, 0 (default)"/>
+			<line value="       to use as many threads as system cores"/>				
+			<line value="   -algorithm a"/>
+			<line value="     * algorithm implementation, one of: standard (default), borndie"/>
+			<line value="   -model m"/>
+			<line value="     * variant for standard algorithm, one of: nullspace (default), canonical"/>
+			<line value="   -adj a"/>
+			<line value="     * method to use for adjacent ray enumeration, one of:"/>
+			<line value="       pattern-tree-minzero (default), pattern-tree-rank, pattern-tree-mod-rank,"/>				
+			<line value="       rankup-modpi-incore, rankup-modpi-outcore"/>				
+			<line value="     * do not use pattern-tree-minzero for for the born/die implementation"/>
+			<line value="   -sortinput o"/>
+			<line value="     * row ordering applied to input matrices, one of:"/>
+			<line value="       LexMin, AbsLexMin, MostZeros, FewestNegPos"/>
+			<line value="     * by default, input rows are not sorted"/>
+			<line value="   -sortinitial o"/>
+			<line value="     * row ordering applied to initial kernel matrix, one of:"/>
+			<line value="       MostZerosOrAbsLexMin (default), MostZeros, AbsLexMin, LexMin, FewestNegPos,"/>
+			<line value="       MostZerosOrFewestNegPos, MostZerosOrLexMin, FewestNegPosOrMostZeros, "/>
+			<line value="       FewestNegPosOrAbsLexMin, Random"/>
+			<line value="   -compression c"/>
+			<line value="     * compression to use, one of: default, off"/>			
+			<line value="   -memory m"/>
+			<line value="     * memory model, one of: in-core (default), out-core, sort-out-core"/>			
+			<line value="     * for out-core/sort-out-core memory, also set the tmpdir option"/>			
+			<line value="   -tmpdir dir"/>
+			<line value="     * directory for temporary files, if out-core memory is used"/>			
+			<line value="     * use fast, local drive directory with large capacity"/>
+			<line value=""/>
+			<line value="log options: "/>
+			<line value="   -level l -format f"/>
+			<line value="     * l: log level, one of: OFF, SEVERE, WARNING, CONFIG, INFO (default), FINE, FINER, FINEST, ALL"/>			
+			<line value="     * f: log format, one of: default, plain"/>			
+			<line value=""/>
+			<line value="other options: "/>
+			<line value="   --help | -h | -? | ?"/>
+			<line value="     * display this help message"/>
+			<line value="   --version | -v"/>
+			<line value="     * display version information"/>
+			<line value=""/>
+			<line value="notes: "/>
+			<line value="   - use quotes for arguments containing white space"/>
+		</usage>
+	</referable>
+
+	<!-- ++++++++++++++++++++++++++++++++++++++++++++++ -->		
+	<!-- =================== usages =================== -->
+    	
+	<usage name="efm-usage">
+		<usage ref="efm-usage"/>
+	</usage>
+	<usage name="polco-help">
+		<usage ref="welcome-message"/>
+		<usage>
+			<line value=""/>
+			<line value="polco parses different source files defining polyhedral cones"/>
+			<line value="and computes the extreme rays or facets of the cone."/>
+			<line value=""/>
+		</usage>
+		<usage ref="usage-line"/>
+		<usage>
+			<line value=""/>
+		</usage>
+		<usage ref="usage-options"/>
+	</usage>
+	<usage name="polco-version">
+		<usage ref="welcome-message"/>
+	</usage>
+	<usage name="polco-noargs">
+		<usage ref="welcome-message"/>
+		<usage>
+			<line value=""/>
+		</usage>
+		<usage ref="usage-line"/>
+		<usage>
+			<line value=""/>
+			<line value="try 'java -jar polco.jar --help' for more information"/>
+		</usage>
+	</usage>
+    
+	<!-- +++++++++++++++++++++++++++++++++++++++++++++++ -->		
+	<!-- =================== configs =================== -->    
+	<config name="default">
+		<app>
+			<name value="polco"/>
+			<version value="4.7.1"/>
+			<copyright value="Copyright (c) 2009, Marco Terzer, Zurich, Switzerland"/>
+		</app>
+		<logging>
+			<handler ref="${-log[1]:console}-logging"/> <!-- console-logging / file-logging -->
+		</logging>
+		<polco>
+			<extreme-ray-enum factory="${-impl[1]:ch.javasoft.polco.metabolic.EfmExtremeRayEnumeratorFactory}"/>
+			<parse ref="${-kind[1]}-parser"/>
+		    <callback ref="${-out[1]}-callback"/>
+			<config ref="polco-config"/>
+		</polco>
+		<metabolic-compression>
+			<preprocess-duplicate-genes value="true"/>
+			<compression-methods ref="${-compression[1]:default}-compression-methods"/>
+		</metabolic-compression>
+		<metabolic-efm>
+			<efm-impl ref="${-algorithm[1]:standard}-efm-impl"/>
+			<efm-output normalize="none"/>
+		</metabolic-efm>
+	</config>
+</config-list>
