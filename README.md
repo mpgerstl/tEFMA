@@ -18,7 +18,7 @@ This README covers the following sections:
 
 ## 1. DESCRIPTION
 
-tEFMA calculates with metabolite concentration data theryodynamically consistent elementary flux modes. tEFMA is an extension of the original efmtool by Marco Terzer (http://www.csb.ethz.ch/tools/efmtool/).
+tEFMA calculates with metabolite concentration data theryodynamically consistent elementary flux modes. tEFMA is an extension of the original efmtool by Marco Terzer [http://www.csb.ethz.ch/tools/efmtool/](http://www.csb.ethz.ch/tools/efmtool/ "efmtool").
 
 tEFMA is written in Java and, hence, a multi-platform program (Linux, MacOS X, Windows,...). This README only covers installation, compilation and operation under Linux.  We tested tEFMA on Ubuntu Linux 12.04, 14.04 and MacOS X 10.7. However, installation and usage of tEFMA on other platforms is supposed to be easy.
 
@@ -27,13 +27,13 @@ The implementation of tEFMA is only a proof of concept. We tried to implement th
 
 ## 2. PREPARATION
 
-If you want to use the thermodynamic options of this tool IBM CPLEX is needed. Information can be found at [ibmilogcpleopti](http://www-03.ibm.com/software/products/en/ibmilogcpleopti "http://www-03.ibm.com/software/products/en/ibmilogcpleopti"). Academic licenses are available by IBM on request.
+If you want to use the thermodynamic options of this tool IBM CPLEX is needed. Information can be found at [http://www-03.ibm.com/software/products/en/ibmilogcpleopti](http://www-03.ibm.com/software/products/en/ibmilogcpleopti "IBM cplex"). Academic licenses are available by IBM on request.
 Please install CPLEX according to IBM's instructions first. 
 
 
 ## 3. INSTALLATION
 
-tEFMA can be downloaded from github https://github.com/mpgerstl/tEFMA.git
+tEFMA can be downloaded from github [https://github.com/mpgerstl/tEFMA.git](https://github.com/mpgerstl/tEFMA.git "tEFMA.git").
 
 ## 4. COMPILATION
 
@@ -49,17 +49,23 @@ Open META-INF MANIFEST.MF with your favorite editor and
 * adapt the path to cplex.jar.
 
 Save the changes and simply execute:
-    make
-    make jarfile
+
+```
+make
+make jarfile
+```
 
 ### Note:
 
-a. We only tested tEFMA with JDK-1.7.
-c. tEFMA does not work with Java version less than JDK-1.7.
-d. Other java versions have not been used by us, yet.
+1. We only tested tEFMA with JDK-1.7.
+2. tEFMA does not work with Java version less than JDK-1.7.
+3. Other java versions have not been used by us, yet.
 
 In order to delete all compiled class files execute:
-    make clean
+
+```
+make clean
+```
 
 ## 5. HOW TO RUN THE PROVIDED TEST CASES
 
