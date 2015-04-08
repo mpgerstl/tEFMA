@@ -76,14 +76,25 @@ public class ThermoEfmCheck {
 			InputHandler iHandler = new InputHandler(sMatrix, metabolites, reactions, compressedReactions, concentrationFile, stdMin, stdMax, m_gibbsC);
 			m_thermo_orig = new ThermoChecker(temperature, is, pH, iHandler, m_gibbsC, lpFile, lpVariableFile, patternConverter, finalBooleanSize);
 			if (checkModel) {
+                LOG.finest(" ");
+                LOG.finest("Reaction order:");
+                for (int i=0; i<finalBooleanSize; i++) {
+                    BitSet mode = new BitSet(finalBooleanSize);
+                    mode.set(i);
+                    mode.flip(0, finalBooleanSize);
+                    String rx = patternConverter.getPatternFromBitSet(mode, finalBooleanSize);
+                    String ix = Integer.toString(i+1);
+                    LOG.finest(ix + ": " + rx);
+                }
+                LOG.finest(" ");
+
 				if (!m_thermo_orig.isInitialModelFeasible(finalBooleanSize)) {
 					ArrayList<String> inf = m_thermo_orig.getInitialInfeasibleReactions();
 					
-					System.out.println("Infeasible: ");
+					LOG.finer("Infeasible: ");
 					for (String x : inf) {
-						System.out.print("   " + x);
+						LOG.finer("   " + x);
 					}
-					System.out.println("\n");
 					if (m_infeasiblePatternWriter != null) {
 						m_infeasiblePatternWriter.printPattern(StaticPatternContainer.getPattern(), StaticPatternContainer.getIterationStartPosition());
 					}
