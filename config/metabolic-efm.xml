@@ -223,6 +223,7 @@
 			  <pattern-file value="${-pattern[1]:}"/> <!-- outputfile for infeasible pattern -->
 			  <lp-file value="${-lpfile[1]:}"/> <!-- outputfile for lp problem -->
 			  <lpvar-file value="${-lpvar[1]:}"/> <!-- outputfile for lp variables -->
+			  <proton value="${-proton[1]:}"/> <!-- name of proton in model -->
 			<!-- end of thermodynamic input -->
 			<separator value="${-sep[1]: }"/>
 		</parse>

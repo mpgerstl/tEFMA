@@ -131,7 +131,7 @@ import ch.javasoft.xml.config.XmlUtil;
  */
 public class ConfiguredParser {
 	public static enum XmlElements implements XmlNode {
-		metabolic_parse, parse, input, file, const_, separator, generulefile, rulesort, loopremoval, external, external_compartment, sbml_validate_schema, test, cmin, cmax, temperature, ph, ionstrength, thermothreads, concentration_file, thermodynamic_file, pattern_file, lp_file, lpvar_file, thermomanner;
+		metabolic_parse, parse, input, file, const_, separator, generulefile, rulesort, loopremoval, external, external_compartment, sbml_validate_schema, test, cmin, cmax, temperature, ph, ionstrength, thermothreads, concentration_file, thermodynamic_file, pattern_file, lp_file, lpvar_file, proton, thermomanner;
 		public String getXmlName() {
 			return this == const_ ? "const" : name().replaceAll("_", "-");
 		}
@@ -510,6 +510,12 @@ public class ConfiguredParser {
 		lpvar_file = lpvar_file.trim();
 		if (!lpvar_file.isEmpty()) {
 			ThermodynamicParameters.setLpVariableFile(lpvar_file);
+		}
+		Element elProton = XmlUtil.getRequiredSingleChildElement(parseElement, XmlElements.proton);
+		String proton = XmlUtil.getRequiredAttributeValue(elProton, XmlAttributes.value);
+		proton = proton.trim();
+		if (!proton.isEmpty()) {
+			ThermodynamicParameters.setProton(proton);
 		}
 		// end of modification by matthias
 		// ==============================================

@@ -52,6 +52,7 @@ public class ThermodynamicParameters {
 	private static String m_infeasiblePatternFile;
 	private static String m_lpFile;
 	private static String m_lpVariableFile;
+    private static String m_proton = "NONE";
 	private static String m_manner = THERMO_MEMORY;
 	private static double m_stdMin = 1e-7;
 	private static double m_stdMax = 1;
@@ -104,6 +105,14 @@ public class ThermodynamicParameters {
 		m_lpVariableFile = lpVariableFile;
 		m_lpVarSet = true;
 	}
+    
+    /**
+     * set name of proton in model
+     * @param proton
+     */
+    public static void setProton(String proton) {
+        m_proton = proton;
+    }
 
 	/**
 	 * original metabolic network is needed to define each single reaction, as
@@ -221,6 +230,13 @@ public class ThermodynamicParameters {
 	 */
 	public static String getLpVariableFile() {
 		return m_lpVariableFile;
+	}
+
+	/**
+	 * @return name of proton in model
+	 */
+	public static String getProton() {
+		return m_proton;
 	}
 
 	/**
