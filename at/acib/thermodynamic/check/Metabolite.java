@@ -45,11 +45,12 @@ import at.acib.thermodynamic.exception.ConcentrationErrorException;
  */
 public class Metabolite {
 
-	private String m_name;
-	private String m_abbr;
-	private double m_cmin;
-	private double m_cmax;
-	private double m_dfG;
+	private String  m_name;
+	private String  m_abbr;
+	private double  m_cmin;
+	private double  m_cmax;
+	private double  m_dfG;
+    private boolean m_isProton;
 
 	/**
 	 * constructor
@@ -65,12 +66,13 @@ public class Metabolite {
 	 * @param dfG
 	 *            delta G0 of formation
 	 */
-	public Metabolite(String abbreviation, String name, double cmin, double cmax, double dfG) throws ConcentrationErrorException {
-		m_abbr = abbreviation;
-		m_name = name;
-		m_cmin = cmin;
-		m_cmax = cmax;
-		m_dfG = name.equalsIgnoreCase("proton") ? 0 : dfG;
+	public Metabolite(String abbreviation, String name, double cmin, double cmax, double dfG, boolean isProton) throws ConcentrationErrorException {
+		m_abbr     = abbreviation;
+		m_name     = name;
+		m_cmin     = cmin;
+		m_cmax     = cmax;
+        m_dfG      = dfG;
+        m_isProton = isProton;
 		if (Math.log(m_cmin) > Math.log(m_cmax)) {
 			throw new ConcentrationErrorException(m_name, m_cmin, m_cmax);
 		}
@@ -110,5 +112,12 @@ public class Metabolite {
 	protected double getDfg0() {
 		return m_dfG;
 	}
+
+    /**
+     * @return if metabolite is a proton
+     */
+    protected boolean isProton() {
+        return m_isProton;
+    }
 
 }
