@@ -11,8 +11,9 @@ Following parameters are compulsory for the checks:
     -conc   CONCENTRATION_FILE 
     
 Following parameters are optional
-    -ph			- pH value (default: 7)
-    -temperature	- temperature in K (default: 310.15 K)
+    -ph			        - pH value (default: 7)
+    -temperature	    - temperature in K (default: 310.15 K)
+    -proton             - name of proton in model
     -ionstrength        - ionic strength in M (default: 0.15 M)
     -thermothreads      - number of threads used by cplex (default: number of threads given by general option -maxthreads)
     -pattern            - name of file to print infeasible reaction pattern (default: not printed)

@@ -3,9 +3,17 @@ tEFMA calculates thermodynamically feasible elementary flux modes
 
 If you use this software please cite 
 
-> Matthias P. Gerstl, Christian Jungreuthmayer, and Jürgen Zanghellini    
-> tEFMA: computing thermodynamically feasible elementary flux modes in metabolic networks    
-> Bioinformatics 2015 : btv111v1-btv111. 
+> Matthias P. Gerstl, Christian Jungreuthmayer, and Jürgen Zanghellini. tEFMA:
+> computing thermodynamically feasible elementary flux modes in metabolic
+> networks. Bioinformatics (2015) 31 (13): 2232-2234 first published online
+> February 19, 2015 doi:10.1093/bioinformatics/btv111 
+
+and
+
+> Matthias P. Gerstl, David E. Ruckerbauer, Diethard Mattanovich, Christian
+> Jungreuthmayer & Jürgen Zanghellini. Metabolomics integrated elementary flux
+> mode analysis in large metabolic networks. Scientific Reports 5, Article
+> number: 8930 (2015) doi:10.1038/srep08930
 
 This README covers the following sections:
 
