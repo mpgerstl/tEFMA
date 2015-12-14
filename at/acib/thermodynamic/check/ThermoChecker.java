@@ -589,7 +589,7 @@ public class ThermoChecker {
             PredefinedReaction preRx = new PredefinedReaction();
             for (String x : rx) {
                 int key = getLpReactionKey(x);
-                if (key > 0) {
+                if (key > -1) {
                     int dir = (x.startsWith(RX_PREFIX)) ? CplexHandler.DIRECTION_FWD
                             : CplexHandler.DIRECTION_REV;
                     preRx.addReaction(m_lpReactions.get(key), dir);
