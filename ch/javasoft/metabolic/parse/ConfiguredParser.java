@@ -131,7 +131,7 @@ import ch.javasoft.xml.config.XmlUtil;
  */
 public class ConfiguredParser {
 	public static enum XmlElements implements XmlNode {
-		metabolic_parse, parse, input, file, const_, separator, generulefile, rulesort, loopremoval, external, external_compartment, sbml_validate_schema, test, cmin, cmax, temperature, ph, ionstrength, thermothreads, concentration_file, thermodynamic_file, pattern_file, lp_file, lpvar_file, proton, thermomanner;
+		metabolic_parse, parse, input, file, const_, separator, generulefile, rulesort, loopremoval, external, external_compartment, sbml_validate_schema, test, drgub, cmin, cmax, temperature, ph, ionstrength, thermothreads, concentration_file, thermodynamic_file, pattern_file, lp_file, lpvar_file, proton, thermomanner;
 		public String getXmlName() {
 			return this == const_ ? "const" : name().replaceAll("_", "-");
 		}
@@ -421,6 +421,16 @@ public class ConfiguredParser {
 				.getChildElementByAttributeValue(parseElement, XmlElements.input, XmlAttributes.name, StoichInputType.reaction_names_file.getXmlName(), true /* throwExceptionIfNull */);
 
 		// parse thermodynamic information
+		Element elDrgub = XmlUtil.getRequiredSingleChildElement(parseElement, XmlElements.drgub);
+		String drgub = XmlUtil.getRequiredAttributeValue(elDrgub, XmlAttributes.value);
+		drgub = drgub.trim();
+		if (!drgub.isEmpty()) {
+			double temp = Double.valueOf(drgub);
+            if (temp >= 0) {
+                temp *= -1;
+                ThermodynamicParameters.setDrgUb(temp);
+            }
+		}
 		Element elCmin = XmlUtil.getRequiredSingleChildElement(parseElement, XmlElements.cmin);
 		String cmin = XmlUtil.getRequiredAttributeValue(elCmin, XmlAttributes.value);
 		cmin = cmin.trim();

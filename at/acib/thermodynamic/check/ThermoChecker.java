@@ -34,6 +34,8 @@
 
 package at.acib.thermodynamic.check;
 
+import at.acib.thermodynamic.*;
+
 import ilog.concert.IloException;
 
 import java.util.ArrayList;
@@ -513,7 +515,7 @@ public class ThermoChecker {
     private void defineReactionEnergyBounds() {
         for (int i = m_reactionStartInd; i < m_lb.length; i++) {
             m_lb[i] = -Double.MAX_VALUE;
-            m_ub[i] = 0;
+            m_ub[i] = ThermodynamicParameters.getDrgUb();
         }
     }
 

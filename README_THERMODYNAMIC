@@ -19,6 +19,9 @@ Following parameters are optional
     -pattern            - name of file to print infeasible reaction pattern (default: not printed)
     -lpfile             - name of file to print initial lp file used by cplex (default: not printed)
     -lpvar              - name of file to print variables and description as used by cplex (default: not printed)
+    -drgub              - upper bound for Gibbs energy of reaction (default: 1e-5)
+                          this is needed as cplex uses smaller equal instead of smaller than 0
+                          provide a value >= 0 as tEFMA converts it to the negative value
 
 ########################
 #

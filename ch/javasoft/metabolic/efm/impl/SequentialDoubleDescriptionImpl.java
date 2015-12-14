@@ -107,6 +107,7 @@ public class SequentialDoubleDescriptionImpl extends AbstractDoubleDescriptionIm
 			build.append("Standard minimum concentration: " + ThermodynamicParameters.getStdMin() + "\n");
 			build.append("Standard maximum concentration: " + ThermodynamicParameters.getStdMax() + "\n");
 			build.append("Proton name in model:           " + ThermodynamicParameters.getProton() + "\n");
+			build.append("Upper bound for DrG:            " + ThermodynamicParameters.getDrgUb() + "\n");
 			build.append("Solver:                         CPLEX\n");
 			build.append("Threads for solver:             " + thermo_threads + "\n");
 			build.append("manner:                         " + thermo_manner + "\n\n");

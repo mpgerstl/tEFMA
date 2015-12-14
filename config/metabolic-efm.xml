@@ -211,6 +211,7 @@
 			<rulesort value="${-rulesort[1]:}"/> <!-- sort reactions on given rules -->
 			<loopremoval  value="${-loopremoval[1]:}"/>  <!-- loop removal implemented by Matthias Gerstl -->
 			<!-- added by matthias for dynamic check -->
+              <drgub value="${-drgub[1]:}"/> <!-- upper bound for DrG -->
 			  <cmin value="${-cmin[1]:}"/>
 			  <cmax value="${-cmax[1]:}"/>
 			  <ph value="${-ph[1]:}"/>

@@ -54,6 +54,7 @@ public class ThermodynamicParameters {
 	private static String m_lpVariableFile;
     private static String m_proton = "NONE";
 	private static String m_manner = THERMO_MEMORY;
+	private static double m_drg_ub = -1e-5;
 	private static double m_stdMin = 1e-7;
 	private static double m_stdMax = 1;
 	private static double m_pH = 7;
@@ -139,6 +140,14 @@ public class ThermodynamicParameters {
 		} else if (manner.equalsIgnoreCase(THERMO_MEMORY)) {
 			m_manner = THERMO_MEMORY;
 		}
+	}
+
+	/**
+	 * @param drg_ub
+	 *            upper bound limit for DrG: default -1e-5
+	 */
+	public static void setDrgUb(double drg_ub) {
+		m_drg_ub = drg_ub;
 	}
 
 	/**
@@ -237,6 +246,13 @@ public class ThermodynamicParameters {
 	 */
 	public static String getProton() {
 		return m_proton;
+	}
+
+	/**
+	 * @return upper bound limit for DrG
+	 */
+	public static double getDrgUb() {
+		return m_drg_ub;
 	}
 
 	/**
